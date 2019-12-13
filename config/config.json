@@ -1,6 +1,6 @@
 {
   "development": {
-    "database": "jwt_auth_starter_db_dev",
+    "database": "goal_getter",
     "host": "127.0.0.1",
     "dialect": "postgres"
   },
