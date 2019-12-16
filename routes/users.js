@@ -5,6 +5,7 @@ const jwtCheck = require('express-jwt');
 const passport = require('../passport-config/passport')
 const config = require('../passport-config/config');
 const User = require('../models').User;
+const Quote = require('../models').Quote;
 
 /* GET users listing. */
 router.get('/', (req, res) => {
@@ -49,11 +50,11 @@ router.post('/login', (req, res) => {
               id: user.id
             }
             const token = jwt.encode(payload, config.jwtSecret)
-            res.json({ token, user })
+            res.json({ token, user, Quote })
           } else {
             res.sendStatus(401)
           }
-        } else {
+        } else {  
           res.sendStatus(401)
         }
       })
