@@ -6,6 +6,7 @@ const passport = require('../passport-config/passport')
 const config = require('../passport-config/config');
 const User = require('../models').User;
 const Quote = require('../models').Quote;
+const Goal = require('../models').Goal;
 
 /* GET users listing. */
 router.get('/', (req, res) => {
@@ -43,14 +44,19 @@ router.post('/signup', (req, res) => {
 router.post('/login', (req, res) => {
   if (req.body.email && req.body.password) {
     User.findOne({ where: { email: req.body.email } })
-      .then(user => {
-        if (user) {
-          if (user.password === req.body.password) {
+      .then(foundUser => {
+        if (foundUser) {
+          if (foundUser.password === req.body.password) {
+            const user = foundUser;
             const payload = {
               id: user.id
             }
             const token = jwt.encode(payload, config.jwtSecret)
-            res.json({ token, user, Quote })
+
+            Goal.findAll({where: {user_id: user.id }})
+              .then(userGoals => {
+                res.json({ token, user, userGoals })
+              })            
           } else {
             res.sendStatus(401)
           }
