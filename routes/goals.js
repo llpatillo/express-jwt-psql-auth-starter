@@ -1,6 +1,10 @@
 var express = require('express');
 var router = express.Router();
 const Goal= require('../models').Goal;
+const jwt = require('jwt-simple');
+const jwtCheck = require('express-jwt');
+const passport = require('../passport-config/passport')
+const config = require('../passport-config/config');
 
 // GET all goals
 router.get('/', (req, res) => {
@@ -13,10 +17,12 @@ router.get('/', (req, res) => {
 });
 
 // CREATE a goal
-router.post('/', (req, res) => {
-    Goal.create({category: req.body.category, target_completion_date: req.body.target_completion_date, goal: req.body.goal, status: req.body.status})
+router.post('/', jwtCheck({ secret: config.jwtSecret }), (req, res) => {
+    let decoded = jwt.decode(req.headers.authorization.split(' ')[1], config.jwtSecret)
+
+    Goal.create({category: req.body.category, target_completion_date: req.body.target_completion_date, goal: req.body.goal, status: req.body.status, user_id: decoded.id})
     .then(newGoal => {
-        res.json ({ goal: newGoal })
+        res.json ({ newGoal })
     })
 });
 
