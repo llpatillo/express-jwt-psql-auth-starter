@@ -1,6 +1,11 @@
 var express = require('express');
 var router = express.Router();
 const Journal= require('../models').Journal;
+const jwt = require('jwt-simple');
+const jwtCheck = require('express-jwt');
+const passport = require('../passport-config/passport')
+const config = require('../passport-config/config');
+
 
 // GET all journals
 router.get('/', (req, res) => {
@@ -13,10 +18,12 @@ router.get('/', (req, res) => {
 });
 
 // CREATE a journal
-router.post('/', (req, res) => {
-    Journal.create({title: req.body.title, thoughts: req.body.thoughts})
+router.post('/', jwtCheck({ secret: config.jwtSecret }), (req, res) => {
+    let decoded = jwt.decode(req.headers.authorization.split(' ')[1], config.jwtSecret)
+
+    Journal.create({title: req.body.title, thoughts: req.body.thoughts, user_id: decoded.id})
     .then(newJournal => {
-        res.json ({ journal: newJournal })
+        res.json ({ newJournal })
     })
 });
 

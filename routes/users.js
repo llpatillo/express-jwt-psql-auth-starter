@@ -7,6 +7,7 @@ const config = require('../passport-config/config');
 const User = require('../models').User;
 const Quote = require('../models').Quote;
 const Goal = require('../models').Goal;
+const Journal = require('../models').Journal;
 
 /* GET users listing. */
 router.get('/', (req, res) => {
@@ -54,8 +55,13 @@ router.post('/login', (req, res) => {
             const token = jwt.encode(payload, config.jwtSecret)
 
             Goal.findAll({where: {user_id: user.id }})
-              .then(userGoals => {
-                res.json({ token, user, userGoals })
+              .then(goals => {
+                const userGoals = goals
+                Journal.findAll({where: {user_id: user.id }})
+                .then(userJournals => {
+                  res.json({ token, user, userGoals, userJournals})
+                })
+                
               })            
           } else {
             res.sendStatus(401)
