@@ -8,12 +8,11 @@ const config = require('../passport-config/config');
 
 // GET all goals
 router.get('/', (req, res) => {
-    Goal.findAll()
-
+    console.log('QUE', req.query);
+    Goal.findAll({where: {user_id: req.query.userId }})
     .then(goals => {
         res.json({ goals })
     })
-
 });
 
 // CREATE a goal
@@ -42,7 +41,9 @@ router.put('/:id', (req, res) => {
   })
 
 //DELETE a goal
-router.delete('/:id', (req, res) => {
+router.delete('/:id', jwtCheck({ secret: config.jwtSecret }), (req, res) => {
+    let decoded = jwt.decode(req.headers.authorization.split(' ')[1], config.jwtSecret)
+
     Goal.destroy({ where: {id: req.params.id } })
       .then(() => {
         return Goal.findAll()

@@ -43,7 +43,9 @@ router.put('/:id', (req, res) => {
   })
 
 //DELETE a journal
-router.delete('/:id', (req, res) => {
+router.delete('/:id', jwtCheck({ secret: config.jwtSecret }), (req, res) => {
+    let decoded = jwt.decode(req.headers.authorization.split(' ')[1], config.jwtSecret)
+
     Journal.destroy({ where: {id: req.params.id } })
       .then(() => {
         return Journal.findAll()
