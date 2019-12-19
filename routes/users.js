@@ -21,8 +21,10 @@ router.get('/', (req, res) => {
 router.post('/signup', (req, res) => {
   if (req.body.email && req.body.password) {
     let newUser = {
+      name: req.body.name,
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
+      profile_pic_url: req.body.profile_pic_url
     }
     User.findOne({ where: { email: req.body.email } })
       .then(user => {
